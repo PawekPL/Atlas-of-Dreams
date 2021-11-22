@@ -9,7 +9,7 @@ class MyApp(ShowBase):
 
         ShowBase.__init__(self)
 
-        model = self.loader.load_model("torus.obj", )
+        model = self.loader.load_model("test.obj", )
         model.reparent_to(self.render)
 
 app = MyApp()
