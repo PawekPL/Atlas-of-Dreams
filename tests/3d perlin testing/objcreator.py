@@ -4,7 +4,7 @@ import time
 
 
 
-def generateChunk(chunkName,SIZE=200,seed=time.time()):
+def generateChunk(chunkName,SIZE=100,seed=time.time()):
     # Load perlin noise and set seed
     np.random.seed(int(seed))
     noise = generateNoise(SIZE)
@@ -12,12 +12,12 @@ def generateChunk(chunkName,SIZE=200,seed=time.time()):
     tris = []
     normals = {}
 
-    Wavefront = 'o test\n'
+    Wavefront = 'mtllib blenderfile.mtl\no test\n'
     Wftris = ''
     Wfnormals = ''
     for x in range(0,SIZE):
         for y in range(0,SIZE):
-            verts[SIZE*x+y] = (x,y,noise[x,y])
+            verts[SIZE*x+y] = (x,noise[x,y],y)
             Wavefront += f'v {float(verts[SIZE*x+y][0])} {float(verts[SIZE*x+y][1])} {float(verts[SIZE*x+y][2])}\n'
             if x > 0 and y > 0:
                 tris += [[SIZE*(x-1)+(y-1),SIZE*(x-1)+y,SIZE*x+y,'']]
@@ -34,7 +34,7 @@ def generateChunk(chunkName,SIZE=200,seed=time.time()):
         Wftris += f'f {tri[0]+1}//{tri[3]+1} {tri[1]+1}//{tri[3]+1} {tri[2]+1}//{tri[3]+1}\n'
 
 
-    Wfnormals += 'usemtl Default\ns off\n'
+    Wfnormals += 'usemtl Material\ns off\n'
     Wavefront += Wfnormals
     Wavefront += Wftris
 
@@ -46,7 +46,7 @@ def generateChunk(chunkName,SIZE=200,seed=time.time()):
 
 
 def generateNoise(SIZE):
-    multiplier = 50
+    multiplier = 20
     scale = 5
     return generate_perlin_noise_2d((SIZE,SIZE),(scale,scale))*multiplier + generate_perlin_noise_2d((SIZE,SIZE),(scale//2,scale//2))
 
