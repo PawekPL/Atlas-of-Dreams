@@ -2,7 +2,9 @@ from perlin_numpy import generate_perlin_noise_2d
 import numpy as np
 import time
 
-
+class Vertex(object):
+    def __init__(self,x,y,z,humidity,temperature,erosion,fantasy,evilness):
+        pass
 
 def generateChunk(chunkName,SIZE=100,seed=time.time()):
     # Load perlin noise and set seed
