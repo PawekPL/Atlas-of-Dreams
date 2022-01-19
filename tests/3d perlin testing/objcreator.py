@@ -3,7 +3,9 @@ import numpy as np
 import time
 
 class Vertex(object):
-    def __init__(self,x,y,z,humidity,temperature,erosion,fantasy,evilness):
+    def __init__(self,x,y,z,humidity,temperature,erosion,fantasyness,evilness):
+        self.x,self.y,self.z = x,y,z
+        
         pass
 
 def generateChunk(chunkName,SIZE=100,seed=time.time()):
