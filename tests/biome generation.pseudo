@@ -1,0 +1,22 @@
+
+class vertex
+	private x
+	private y
+	private z
+	private humidity
+	private temperature
+	private erosion
+	private fantasyness
+	private evilness
+ 	
+	public new(x,y,z,humidity,temperature,erosion,fantasyness,evilness)
+		x = x
+		y = y
+		z = z
+		humidity = humidity
+		temperature = temperature
+		erosion = erosion
+		fantasyness = fantasyness
+		evilness = evilness
+		
+		biome = getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
