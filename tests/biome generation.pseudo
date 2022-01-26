@@ -1,15 +1,19 @@
 
+public BIOME_LIST  // get a list of biomes and their properties (most likely from csv/json file)
+public biomeTree = KDTree(BIOME_LIST)  // get a K-dimensional tree from the biome list (in python this is done with the scipy library)
+
 class vertex
-	private x
-	private y
-	private z
+	public x
+	public y
+	public z
 	private humidity
 	private temperature
 	private erosion
 	private fantasyness
 	private evilness
- 	
-	public new(x,y,z,humidity,temperature,erosion,fantasyness,evilness)
+	public biome
+
+	public procedure new(x,y,z,humidity,temperature,erosion,fantasyness,evilness)
 		x = x
 		y = y
 		z = z
@@ -20,3 +24,20 @@ class vertex
 		evilness = evilness
 		
 		biome = getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
+		y = calculateHeight(y,erosion)
+	endprocedure
+
+	private function getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
+		private dist
+		private id
+		dist, id = biomeTree.query([y,humidity,temperature,erosion,fantasyness,evilness])  // find the closest vector to the vector from generated values
+		return BIOME_LIST[id]["BiomeID"]
+	endfunction
+
+	private function calculateHeight(y,erosion)
+		private height
+		height = 1 + (y+erosion/10) * 60    // the expression "y+erosion/10" might change later. I'll have to experiment on how that affects the heightmap.  60 will be the default height
+		return height 
+	endfunction
+
+
