@@ -9,7 +9,7 @@ print(array)
 
 value = np.random.random(6)
 
-tree = spatial.KDTree(array)
+tree = spatial.cKDTree(array)
 _,id=tree.query(value)
 
 print(value)
