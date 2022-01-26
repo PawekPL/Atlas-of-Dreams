@@ -39,5 +39,5 @@ class vertex
 		height = 1 + (y+erosion/10) * 60    // the expression "y+erosion/10" might change later. I'll have to experiment on how that affects the heightmap.  60 will be the default height
 		return height 
 	endfunction
-
+endclass
 
