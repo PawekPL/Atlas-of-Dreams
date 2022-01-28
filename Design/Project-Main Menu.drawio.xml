@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" modified="2022-01-28T13:02:16.754Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/16.4.11 Chrome/96.0.4664.110 Electron/16.0.7 Safari/537.36" etag="hwbsMuMI-3L5fYifJu7Z" version="16.4.11" type="device">
+  <diagram id="YHxb8Wq1LGtLLouCogWO" name="Main Menu">
+    <mxGraphModel dx="1221" dy="811" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-0" />
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-1" parent="ByZqfT-NYa6IWPlVlSL2-0" />
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-4" value="" style="swimlane;startSize=0;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-1">
+          <mxGeometry width="1080" height="720" as="geometry">
+            <mxRectangle width="50" height="40" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-6" value="New Project" style="rounded=1;whiteSpace=wrap;html=1;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-4">
+          <mxGeometry x="415" y="200" width="250" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-7" value="Open Project" style="rounded=1;whiteSpace=wrap;html=1;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-4">
+          <mxGeometry x="415" y="360" width="250" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-8" value="Settings" style="rounded=1;whiteSpace=wrap;html=1;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-4">
+          <mxGeometry x="415" y="524.5" width="250" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-9" value="Quit" style="rounded=1;whiteSpace=wrap;html=1;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-4">
+          <mxGeometry x="940" y="644.5" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-10" value="Logo" style="rounded=0;whiteSpace=wrap;html=1;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-4">
+          <mxGeometry x="415" y="10" width="250" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="ByZqfT-NYa6IWPlVlSL2-11" value="About" style="rounded=1;whiteSpace=wrap;html=1;fontSize=44;" vertex="1" parent="ByZqfT-NYa6IWPlVlSL2-4">
+          <mxGeometry x="940" y="10" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
