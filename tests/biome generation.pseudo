@@ -1,43 +1,58 @@
 
 public BIOME_LIST  // get a list of biomes and their properties (most likely from csv/json file)
-public biomeTree = KDTree(BIOME_LIST)  // get a K-dimensional tree from the biome list (in python this is done with the scipy library)
+public KDTree biomeTree = KDTree(BIOME_LIST)  // get a K-dimensional tree from the biome list (in python this is done with the scipy library)
+public dict assetDict  // get a list of paths to assets such as trees and buildings based on the selected biome
+public dict settings // read settings from file 
 
 class vertex
-	public x
-	public y
-	public z
-	private humidity
-	private temperature
-	private erosion
-	private fantasyness
-	private evilness
-	public biome
+	public int x
+	public int y
+	public int z
+	private float humidity
+	private float temperature
+	private float erosion
+	private float fantasyness
+	private float evilness
+	public string biome
 
-	public procedure new(x,y,z,humidity,temperature,erosion,fantasyness,evilness)
-		x = x
-		y = y
-		z = z
-		humidity = humidity
-		temperature = temperature
-		erosion = erosion
-		fantasyness = fantasyness
-		evilness = evilness
+	public procedure new(_x,_y,_z,_humidity,_temperature,_erosion,_fantasyness,_evilness)
+		x = _x
+		y = _y
+		z = _z
+		humidity = _humidity
+		temperature = _temperature
+		erosion = _erosion
+		fantasyness = _fantasyness
+		evilness = _evilness
 		
 		biome = getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
 		y = calculateHeight(y,erosion)
 	endprocedure
 
 	private function getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
-		private dist
-		private id
+		private float dist
+		private int id
 		dist, id = biomeTree.query([y,humidity,temperature,erosion,fantasyness,evilness])  // find the closest vector to the vector from generated values
 		return BIOME_LIST[id]["BiomeID"]
 	endfunction
 
 	private function calculateHeight(y,erosion)
-		private height
+		private float height
 		height = 1 + (y+erosion/10) * 60    // the expression "y+erosion/10" might change later. I'll have to experiment on how that affects the heightmap.  60 will be the default height
 		return height 
 	endfunction
 endclass
 
+class chunk
+	private tuple size
+	public array vertices
+	public int chunkX
+	public int chunkY
+
+	public procedure new()
+		size = settings["chunk-size"]
+
+	endprocedure
+
+
+endclass
