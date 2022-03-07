@@ -14,19 +14,28 @@ class vertex
 	private float fantasyness
 	private float evilness
 	public string biome
+	public string type		//there will be 3 vertex types: 
+							//t - terrain vertex, the main vertex that dictates the shape of the terrain;
+							//w - water vertex, vertex used for generating the surface of water
+							//a - asset vertex, vertex containing information about asset placement. 
 
-	public procedure new(_x,_y,_z,_humidity,_temperature,_erosion,_fantasyness,_evilness)
+	public procedure new(_x,_y,_z,type,[_humidity,_temperature,_erosion,_fantasyness,_evilness])
 		x = _x
 		y = _y
 		z = _z
-		humidity = _humidity
-		temperature = _temperature
-		erosion = _erosion
-		fantasyness = _fantasyness
-		evilness = _evilness
-		
-		biome = getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
-		y = calculateHeight(y,erosion)
+		if type = "t"
+			humidity = _humidity
+			temperature = _temperature
+			erosion = _erosion
+			fantasyness = _fantasyness
+			evilness = _evilness		
+			biome = getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
+			y = calculateHeight(y,erosion)
+		else if type = "w"
+			pass
+		else if type = "a"
+			pass
+		endif
 	endprocedure
 
 	private function getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
@@ -37,22 +46,43 @@ class vertex
 	endfunction
 
 	private function calculateHeight(y,erosion)
+		// Height will depend on the vertical scale, that will be implemented during evaluation.
 		private float height
-		height = 1 + (y+erosion/10) * 60    // the expression "y+erosion/10" might change later. I'll have to experiment on how that affects the heightmap.  60 will be the default height
+		height = 1 + (y+erosion/10) * 60    // the expression "y+erosion/10" might change later. I'll have to experiment on how that affects the heightmap. 60 will be the default height
 		return height 
 	endfunction
 endclass
 
 class chunk
-	private tuple size
-	public array vertices
+	private int size
+	private int scale
+	public array vertices //array to store all terrain vertices
+	public dict assetsVert //dictionary to store all asset vertices
 	public int chunkX
-	public int chunkY
+	public int chunkZ
+	
 
-	public procedure new()
+
+	public procedure new(noise,noise_hu,noise_te,noise_er,noise_fa,noise_ev,chunkX,chunkZ) // pass trough the noise functions to get correct noise generation 
 		size = settings["chunk-size"]
-
+		scale = settings["vert-scale"]
+		vertices[size,size]  // chunks have to be squares, size will be an integer, this sets the size of the array 
+		for x in size
+			for z in size
+				// the following lines will change during evaluation, due to not having a good scale to compare the terrain to.
+				vertices[x][z] =  vertex(x,noise(x,z),z,"t",noise_hu(x,z),noise_te(x,z),noise_er(x,z),noise_fa(x,z),noise_ev(x,z)) 
+				//if vertices[x][z]
+			endfor
+		endfor
+		
 	endprocedure
 
 
 endclass
+
+
+
+// TODO:
+// When converting to obj use triangle formed with other chunks
+// Generate assets using the grid (OpenSimplex accepts floats)
+// Set the final scale
