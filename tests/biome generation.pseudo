@@ -4,7 +4,7 @@ public KDTree biomeTree = KDTree(BIOME_LIST)  // get a K-dimensional tree from t
 public dict assetDict  // get a list of paths to assets such as trees and buildings based on the selected biome
 public dict settings // read settings from file 
 
-class vertex
+class Vertex
 	public int x
 	public int y
 	public int z
@@ -17,9 +17,11 @@ class vertex
 	public string type		//there will be 3 vertex types: 
 							//t - terrain vertex, the main vertex that dictates the shape of the terrain;
 							//w - water vertex, vertex used for generating the surface of water
-							//a - asset vertex, vertex containing information about asset placement. 
+							//a - asset vertex, vertex containing information about asset placement
+							//e - edge vertex, vertex for edge triangles  
 
-	public procedure new(_x,_y,_z,type,[_humidity,_temperature,_erosion,_fantasyness,_evilness])
+
+	public procedure new(_x,_y,_z,type,[_humidity,_temperature,_erosion,_fantasyness,_evilness,_assetID])
 		x = _x
 		y = _y
 		z = _z
@@ -34,7 +36,8 @@ class vertex
 		else if type = "w"
 			pass
 		else if type = "a"
-			pass
+			assetID = _assetID
+		else if type = "e"
 		endif
 	endprocedure
 
@@ -42,7 +45,7 @@ class vertex
 		private float dist
 		private int id
 		dist, id = biomeTree.query([y,humidity,temperature,erosion,fantasyness,evilness])  // find the closest vector to the vector from generated values
-		return BIOME_LIST[id]["BiomeID"]
+		return id
 	endfunction
 
 	private function calculateHeight(y,erosion)
@@ -53,11 +56,12 @@ class vertex
 	endfunction
 endclass
 
-class chunk
+class Chunk
 	private int size
 	private int scale
 	public array vertices //array to store all terrain vertices
 	public dict assetsVert //dictionary to store all asset vertices
+	public dict waterVert //dictionary to store all water vertices
 	public int chunkX
 	public int chunkZ
 	
@@ -65,13 +69,32 @@ class chunk
 
 	public procedure new(noise,noise_hu,noise_te,noise_er,noise_fa,noise_ev,chunkX,chunkZ) // pass trough the noise functions to get correct noise generation 
 		size = settings["chunk-size"]
-		scale = settings["vert-scale"]
+		scale = settings["vertex-scale"] // scale 2 will be the default (1 vertex square = 1 m^2)
 		vertices[size,size]  // chunks have to be squares, size will be an integer, this sets the size of the array 
 		for x in size
 			for z in size
-				// the following lines will change during evaluation, due to not having a good scale to compare the terrain to.
-				vertices[x][z] =  vertex(x,noise(x,z),z,"t",noise_hu(x,z),noise_te(x,z),noise_er(x,z),noise_fa(x,z),noise_ev(x,z)) 
-				//if vertices[x][z]
+				vertices[x][z] =  Vertex(x*scale,noise(x*scale,z*scale),z*scale,"t",noise_hu(x*scale,z*scale),noise_te(x*scale,z*scale),noise_er(x*scale,z*scale),noise_fa(x*scale,z*scale),noise_ev(x*scale,z*scale)) 
+				//TODO: Write water generation
+
+				// Check if a water vertex exists above the terrain vertex
+				try 
+					if waterVert[SIZE*x+z] //if it does, continue
+						pass
+					endif
+				catch   // if it doesn't it will give KeyError
+					//Generate assets
+					biome = vertices.biome
+					if biome == "forrest"
+						//write tree generator
+					else:
+						assets = BIOME_LIST[biome]["Assets"]
+						chosen_asset = assets.random()  // get id of the asset
+						chance = 1 div int(BIOME_LIST[biome]["AssetChance"]) //chance that the asset spawns
+						if randomint(0,chance) == 0  // get the random integer to decide if the asset spawns
+							assetsVert[SIZE*x+z] = Vertex(x,vertices[x][z].y,z,"a",_assetID = assetID)
+						endif
+					endif
+				endtry
 			endfor
 		endfor
 		
@@ -86,3 +109,6 @@ endclass
 // When converting to obj use triangle formed with other chunks
 // Generate assets using the grid (OpenSimplex accepts floats)
 // Set the final scale
+
+//NOTES:
+// DON'T EXPORT CHUNKS

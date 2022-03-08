@@ -9,19 +9,19 @@ class Vertex(object):
 		pass
 
 def generateChunk(chunkName,SIZE=100,seed=13465,displacement=(0,0)):
+	scale = 2
 	# Load perlin noise and set seed
 	np.random.seed(int(seed))
 	noise = OpenSimplex(seed)
 	verts = {}
 	tris = []
 	normals = {}
-	SIZE+=1
 	Wavefront = 'mtllib blenderfile.mtl\no test\n'
 	Wftris = ''
 	Wfnormals = ''
 	for x in range(0,SIZE):
 		for y in range(0,SIZE):
-			verts[SIZE*x+y] = (x+displacement[0],y+displacement[1],generateNoise(x+displacement[0],y+displacement[1],SIZE,noise))
+			verts[SIZE*x+y] = (x*scale+displacement[0]*SIZE*scale,y*scale+displacement[1]*SIZE*scale,generateNoise(x*scale+displacement[0]*SIZE*scale,y*scale+displacement[1]*SIZE*scale,SIZE,noise))
 			Wavefront += f'v {float(verts[SIZE*x+y][0])} {float(verts[SIZE*x+y][1])} {float(verts[SIZE*x+y][2])}\n'
 			if x > 0 and y > 0:
 				tris += [[SIZE*(x-1)+(y-1),SIZE*(x-1)+y,SIZE*x+y,'']]
@@ -49,11 +49,10 @@ def generateChunk(chunkName,SIZE=100,seed=13465,displacement=(0,0)):
 	return True
 
 
-def generateNoise(x,y,SIZE,noise,noise2=None,noise3=None,noise4=None,noise5=None):
-	multiplier = 20
-	scale = 0.15
-	return noise.noise2d(x/SIZE*scale,y/SIZE*scale)*multiplier + 0.5*noise.noise2d(2*x/SIZE*scale,2*y/SIZE*scale)*multiplier + 0.25*noise.noise2d(4*x/SIZE*scale,4*y/SIZE*scale)*multiplier + 0.125*noise.noise2d(8*x/SIZE*scale,8*y/SIZE*scale)*multiplier + 0.0625*noise.noise2d(16*x/SIZE*scale,16*y/SIZE*scale)*multiplier
+def generateNoise(x,y,SIZE,noise):
+	multiplier = 10
+	return noise.noise2d(x/SIZE,y/SIZE)*multiplier + 0.5*noise.noise2d(2*x/SIZE,2*y/SIZE)*multiplier + 0.25*noise.noise2d(4*x/SIZE,4*y/SIZE)*multiplier + 0.125*noise.noise2d(8*x/SIZE,8*y/SIZE)*multiplier + 0.0625*noise.noise2d(16*x/SIZE,16*y/SIZE)*multiplier
 
 if __name__ == "__main__":
 	generateChunk('test')
-	generateChunk('test2',displacement(100,0))
+	#generateChunk('test2',displacement(100,0))
