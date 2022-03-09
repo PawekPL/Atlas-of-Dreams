@@ -122,15 +122,17 @@ class Chunk
 		private dict normals
 		private list waterTris
 		private dict waterNormals
-
+		
 		private str wavefront_tris
 		private str wavefront_normals = ""
 
 		private string name = str((chunkX,chunkZ)) // for chunk 0,0 the name will be "(0,0)"
 
 		private string wavefront = "mtllib biome-colour-map.mtl\no " + name +"\n"
-		private string wavefrontWater
+		private string wavefrontWater = "mtllib water-colour-map.mtl\no " + name +"\n"
 
+		private int offsetV
+		private int offsetVN
 
 		for x in size
 			for z in size
@@ -149,7 +151,7 @@ class Chunk
 			p2[3] = verts[triangle[1]][0] , verts[triangle[1]][2] , verts[triangle[1]][1]
 			p3[3] = verts[triangle[2]][0] , verts[triangle[2]][2] , verts[triangle[2]][1]
 
-			normals[triangle.index] = crossproduct(p2-p1,p3-p1) // use a crossproduct to calculate the normal vertex
+			normals[triangle.index] = crossproduct(p2-p1,p3-p1) // use a cross product to calculate the normal vertex
 
 			wavefront_normals += "vn "+str(normals[triangle.index][0])+" "+str(normals[triangle.index][1])+" "+str(normals[triangle.index][2])+ "\n"
 			wavefront_tris += "f "+str(triangle[0]+1)+"//"+str(triangle.index+1)+" "+str(triangle[1]+1)+"//"+str(triangle.index+1)+" "+str(triangle[2]+1)+"//"+str(triangle.index+1)+"\n"
@@ -158,7 +160,14 @@ class Chunk
 		wavefront += "usemtl Default\ns off\n"
 		wavefront += wavefront_tris
 
+		//TODO: generate Wavefront for water vertices
 
+		private string wavefront_asset
+		for asset in assetsVert
+			offsetV = wavefront.count("v ")
+			offsetVN = wavefront.count("vn ")
+			json = assetDict[asset.assetID] // json for the asset
+			wavefront += loadAsset(json["path"],asset.x,asset.y,asset.z,offsetV,offsetVN)
 
 		name += ".obj"
 
