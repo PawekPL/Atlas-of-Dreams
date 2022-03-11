@@ -6,7 +6,7 @@ public dict settings // read settings from file
 
 class Vertex
 	public int x
-	public int y
+	public float y
 	public int z
 	private float humidity
 	private float temperature
@@ -14,7 +14,7 @@ class Vertex
 	private float fantasyness
 	private float evilness
 	public string biome
-	public string type		//there will be 3 vertex types:
+	public string type		//there will be 4 vertex types:
 							//t - terrain vertex, the main vertex that dictates the shape of the terrain;
 							//w - water vertex, vertex used for generating the surface of water
 							//a - asset vertex, vertex containing information about asset placement
@@ -31,25 +31,25 @@ class Vertex
 			erosion = _erosion
 			fantasyness = _fantasyness
 			evilness = _evilness
-			biome = getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
-			y = calculateHeight(y,erosion)
+			biome = getBiome()
+			y = calculateHeight()
 		elseif type = "w"
 			pass
 		elseif type = "a"
 			assetID = _assetID
 		elseif type = "e"
-			y = calculateHeight(y,erosion)
+			y = calculateHeight()
 		endif
 	endprocedure
 
-	private function getBiome(y,humidity,temperature,erosion,fantasyness,evilness)
+	private function getBiome()
 		private float dist
 		private int id
 		dist, id = biomeTree.query([y,humidity,temperature,erosion,fantasyness,evilness])  // find the closest vector to the vector from generated values
 		return id
 	endfunction
 
-	private function calculateHeight(y,erosion)
+	private function calculateHeight()
 		// Height will depend on the vertical scale, that will be implemented during evaluation.
 		private float height
 		height = 1 + (y+erosion/10) * 60    // the expression "y+erosion/10" might change later. I'll have to experiment on how that affects the heightmap. 60 will be the default height
@@ -73,21 +73,26 @@ class Chunk
 		size = settings["chunk-size"]
 		scale = settings["vertex-scale"] // scale 2 will be the default (1 vertex square = 1 m^2)
 		vertices[size,size]  // chunks have to be squares, size will be an integer, this sets the size of the array
+		chunkXc = chunkX*scale*size
+		chunkZc = chunkZ*scale*size
 		for x in range(size)
 			for z in range(size)
-				vertices[x][z] =  Vertex(x*scale,noise(x*scale,z*scale),z*scale,"t",noise_hu(x*scale,z*scale),noise_te(x*scale,z*scale),noise_er(x*scale,z*scale),noise_fa(x*scale,z*scale),noise_ev(x*scale,z*scale))
+
+				_x = x*scale+chunkXc
+				_z = z*scale+chunkZc
+				vertices[x][z] =  Vertex(_x,noise(_x,_z),_z,"t",noise_hu(_x,_z),noise_te(_x,_z),noise_er(_x,_z),noise_fa(_x,_z),noise_ev(_x,_z))
 
 
 				//Edge vertex generation
 				if x == 0
-					edgeVert[str((x-1,z))] = Vertex((x-1)*scale,noise((x-1)*scale,z*scale),z*scale,"e",erosion = noise_er((x-1)*scale,z*scale))
+					edgeVert[str((x-1,z))] = Vertex((x-1)*scale+chunkXc,noise((x-1)*scale+chunkXc,z*scale+chunkZc),z*scale+chunkZc,"e",erosion = noise_er((x-1)*scale+chunkXc,z*scale+chunkZc))
 				elseif x == size-1
-					edgeVert[str((x+1,z))] = Vertex((x+1)*scale,noise((x+1)*scale,z*scale),z*scale,"e",erosion = noise_er((x+1)*scale,z*scale))
+					edgeVert[str((x+1,z))] = Vertex((x+1)*scale+chunkXc,noise((x+1)*scale+chunkXc,z*scale+chunkZc),z*scale+chunkZc,"e",erosion = noise_er((x+1)*scale+chunkXc,z*scale+chunkZc))
 				endif
 				if z == 0
-					edgeVert[str((x,z-1))] = Vertex(x*scale,noise(x*scale,(z-1)*scale),(z-1)*scale,"e",erosion = noise_er(x*scale,(z-1)*scale))
+					edgeVert[str((x,z-1))] = Vertex(x*scale+chunkXc,noise(x*scale+chunkXc,(z-1)*scale+chunkZc),(z-1)*scale+chunkZc,"e",erosion = noise_er(x*scale+chunkXc,(z-1)*scale+chunkZc))
 				elseif z == size-1
-					edgeVert[str((x,z+1))] = Vertex(x*scale,noise(x*scale,(z+1)*scale),(z+1)*scale,"e",erosion = noise_er(x*scale,(z+1)*scale))
+					edgeVert[str((x,z+1))] = Vertex(x*scale+chunkXc,noise(x*scale+chunkXc,(z+1)*scale+chunkZc),(z+1)*scale+chunkZc,"e",erosion = noise_er(x*scale+chunkXc,(z+1)*scale+chunkZc))
 				endif
 
 
@@ -108,7 +113,7 @@ class Chunk
 						chosen_asset = assets.random()  // get id of a random asset assigned to the biome
 						chance = 1 div int(BIOME_LIST[biome]["AssetChance"]) //chance that the asset spawns
 						if randomint(0,chance) == 0  // get the random integer to decide if the asset spawns
-							assetsVert[str((x,z)] = Vertex(x,vertices[x][z].y,z,"a",_assetID = assetID)
+							assetsVert[str((x,z)] = Vertex(_x,vertices[x][z].y,_z,"a",_assetID = assetID)
 						endif
 					endif
 				endtry
@@ -126,10 +131,10 @@ class Chunk
 		private str wavefront_tris
 		private str wavefront_normals = ""
 
-		private string name = str((chunkX,chunkZ)) // for chunk 0,0 the name will be "(0,0)"
+		private str name = str((chunkX,chunkZ)) // for chunk 0,0 the name will be "(0,0)"
 
-		private string wavefront = "mtllib biome-colour-map.mtl\no " + name +"\n"
-		private string wavefrontWater = "mtllib water-colour-map.mtl\no " + name +"\n"
+		private str wavefront = "mtllib biome-colour-map.mtl\no " + name +"\n"
+		private strchunk wavefrontWater = "mtllib water-colour-map.mtl\no " + name +"\n"
 
 		private int offsetV
 		private int offsetVN
