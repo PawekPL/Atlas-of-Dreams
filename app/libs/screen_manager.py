@@ -16,13 +16,13 @@ class SceneManager(object):
         else:
             self.scenes[self.current].on_step(self, dt)
 
-    def __init__(self, start, scenes, x=640, y=360, title="Untitled",
+    def __init__(self, start, scenes, resolution, title="Untitled", #changed x and y into resolution variable //Pawel
                  fps=-1, show_fps=False,vsync=False):
         """Initialize and run."""
         self.running = True
         self.current = start
         self.scenes = scenes
-        self.window = pyglet.window.Window(x, y, title,vsync=vsync)
+        self.window = pyglet.window.Window(resolution[0], resolution[1], title,vsync=vsync) #added vsync //Pawel
         pyglet.clock.schedule_interval(self.on_step, 1.0 / fps)
         # Deleted set fps limit line, as it seems to be depricated //Pawel
         self.show_fps = show_fps
