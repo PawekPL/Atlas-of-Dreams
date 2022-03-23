@@ -52,6 +52,6 @@ Manager(VerticalContainer([Button(label="Persistent button"),
                            ]),
         window=window,
         batch=batch,
-        theme=theme)
+        theme=theme) 
 
 pyglet.app.run()

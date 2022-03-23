@@ -125,8 +125,7 @@ class SceneManager(object):
         @self.window.event
         def on_text_motion_select(motion):
             self.scenes[self.current].on_text_motion_select(self, motion)
-
-        pyglet.app.run()
+        #Deleted pygame.app.run() because it was running the app too early.
 
 
 class Scene(object):
