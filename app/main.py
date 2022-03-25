@@ -32,7 +32,7 @@ class Empty(Scene):
 
 
 if __name__ == '__main__':
-    if os.getcwd()[-4:] != "\\app": # To run straight in Atom
+    if os.getcwd()[-4:] != "\\app": # To run straight in Atom without file not found errors
         print(os.getcwd())
         os.chdir(f"{os.getcwd()}\\app")
     scenemgr = Manager(resolution=(1280,720),title="Atlas Of Dreams", show_fps=True,vsync=False,fps=-1)
