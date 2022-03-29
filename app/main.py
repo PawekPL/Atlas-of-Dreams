@@ -6,14 +6,15 @@ import os
 
 class Manager(SceneManager):
 
-    def __init__(self, resolution, title="Untitled", fps=-1, show_fps=False,vsync=False):
+    def __init__(self, resolution, title="Untitled", fps=-1, show_fps=False,vsync=False,resizable=True):
         super().__init__(start="",
                          scenes={"":Empty()},
                          resolution=resolution,
                          title=title,
                          fps=fps,
                          show_fps=show_fps,
-                         vsync=vsync)
+                         vsync=vsync,
+                         resizable=resizable)
         print(1)
         self.scenes = {
                        "menu":Menu(self.window)
