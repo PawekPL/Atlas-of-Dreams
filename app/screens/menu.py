@@ -13,6 +13,8 @@ class Menu(Scene):
 		super().__init__()
 		glEnable(GL_TEXTURE_2D)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+		self.buttonpos = [(515/1280,380/720)]
+		self.buttonsize = [(250/1280,120/720)]
 		self.window = window
 
 		self.pressed = pyglet.image.load("./assets/button-down.png")
@@ -20,13 +22,12 @@ class Menu(Scene):
 
 		self.batch = pyglet.graphics.Batch()
 		self.frame = pyglet.gui.Frame(window, order=4)
-		self.pushbutton = OneTimeButton(100, 300, self.pressed, self.depressed, batch=self.batch)
-		'''
-		width = self.window.width / 4
-		height = self.window.height / 4
+		self.pushbutton = OneTimeButton(self.buttonpos[0][0]*self.window.width,
+										self.buttonpos[0][1]*self.window.height,
+										self.pressed,
+										self.depressed,
+										batch=self.batch)
 
-		self.pushbutton.update(width = width,height = height,nearest = True)
-		'''
 		self.pushbutton.set_handler('on_release', output)
 		self.frame.add_widget(self.pushbutton)
 		self.push_label = pyglet.text.Label("Push Button: False", x=300, y=300, batch=self.batch, color=(0, 0, 0, 255))
@@ -42,13 +43,19 @@ class Menu(Scene):
 		pass
 
 	def on_resize(self,manager,w,h):
-		width = w / 4
-		height = h / 4
+		self.pushbutton.update(x=self.buttonpos[0][0]*self.window.width,
+								y=self.buttonpos[0][1]*self.window.height,
+								width=self.buttonsize[0][0]*self.window.width,
+								height=self.buttonsize[0][1]*self.window.height,
+								imgsize=(250,120),
+								nearest=True)
 
-		self.pushbutton.update(width = width,height = height,nearest = True)
-		print(3)
 	def on_mouse_press(self, manager, x, y, buttons, modifiers):
 		self.pushbutton.on_mouse_press(x, y, buttons, modifiers)
+		if self.pushbutton.value:
+			if not self.pushbutton.nearest:
+				self.pushbutton.update(nearest=True)
+				self.pushbutton.nearest = True
 
 	def on_mouse_release(self, manager, x, y, buttons, modifiers):
 		self.pushbutton.on_mouse_release(x, y, buttons, modifiers)
