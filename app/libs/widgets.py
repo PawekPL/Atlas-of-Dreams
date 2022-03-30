@@ -1,6 +1,16 @@
 from pyglet.gui import *
 from pyglet.gl import *
 
+#Source: https://groups.google.com/g/pyglet-users/c/s8Icda9oPnY
+import types
+def set_state(self):
+    glEnable(self.texture.target)
+    glBindTexture(self.texture.target, self.texture.id)
+    glPushAttrib(GL_COLOR_BUFFER_BIT)
+    glEnable(GL_BLEND)
+    glTexParameteri(self.texture.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glBlendFunc(self.blend_src, self.blend_dest)
+
 class OneTimeButton(PushButton):
     ''' Subclassing PushButton class from Pyglet in order to code in scaling and other transformations'''
     def __init__(self,x, y, pressed, depressed, hover=None, batch=None, group=None):
@@ -25,16 +35,6 @@ class OneTimeButton(PushButton):
 
 
         if nearest:  #if using nearest neighbor
-            #Source: https://groups.google.com/g/pyglet-users/c/s8Icda9oPnY
-            import types
-            def set_state(self):
-                glEnable(self.texture.target)
-                glBindTexture(self.texture.target, self.texture.id)
-                glPushAttrib(GL_COLOR_BUFFER_BIT)
-                glEnable(GL_BLEND)
-                glTexParameteri(self.texture.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-                glBlendFunc(self.blend_src, self.blend_dest)
-
             group = self._sprite._group
             self._sprite._group.set_state = types.MethodType(set_state, group)
 
