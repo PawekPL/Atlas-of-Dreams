@@ -1,6 +1,18 @@
 from pyglet.gui import *
 from pyglet.gl import *
 
+#Procedure to update label properties
+def updateLabel(label,x=None, y=None,font_size=None,color=None):
+    if x:
+        label.x = x
+    if y:
+        label.y = y
+    if font_size:
+        label.font_size = font_size
+    if color:
+        label.color = color
+    pass
+
 #Source: https://groups.google.com/g/pyglet-users/c/s8Icda9oPnY
 import types
 def set_state(self):
@@ -13,9 +25,10 @@ def set_state(self):
 
 class OneTimeButton(PushButton):
     ''' Subclassing PushButton class from Pyglet in order to code in scaling and other transformations'''
-    def __init__(self,x, y, pressed, depressed, hover=None, batch=None, group=None):
+    def __init__(self, x, y, pressed, depressed, hover=None, batch=None, group=None):
         super().__init__(x, y, pressed, depressed, hover, batch, group)
         self.nearest = False
+
 
     def update(self,x=None, y=None, width=None, height=None, nearest=None, imgsize=None):
         scale_x,scale_y = None,None
@@ -40,3 +53,28 @@ class OneTimeButton(PushButton):
 
 
         self._sprite.update(x=x, y=y, scale_x=scale_x, scale_y=scale_y)
+
+
+class ToggleButton(OneTimeButton):
+    """Instance of a toggle button sourced from pyglet.gui. The code was copied here,
+    so that it inherits from OneTimeButton instead of PushButton.
+    Triggers the event 'on_toggle' when the mouse is pressed or released.
+    """
+
+    def _get_release_image(self, x, y):
+        return self._hover_img if self._check_hit(x, y) else self._depressed_img
+
+    def on_mouse_press(self, x, y, buttons, modifiers):
+        if not self.enabled or not self._check_hit(x, y):
+            return
+        self._pressed = not self._pressed
+        self._sprite.image = self._pressed_img if self._pressed else self._get_release_image(x, y)
+        self.dispatch_event('on_toggle', self._pressed)
+
+    def on_mouse_release(self, x, y, buttons, modifiers):
+        if not self.enabled or self._pressed:
+            return
+        self._sprite.image = self._get_release_image(x, y)
+
+
+ToggleButton.register_event_type('on_toggle')

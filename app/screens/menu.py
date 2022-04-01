@@ -1,7 +1,7 @@
 from libs.screen_manager import Scene
 import pyglet
 from pyglet.gl import *
-from libs.widgets import OneTimeButton
+from libs.widgets import OneTimeButton,updateLabel
 
 import time
 
@@ -31,7 +31,10 @@ class Menu(Scene):
 		self.logopng = pyglet.image.load("./assets/logo.png")
 
 		self.batch = pyglet.graphics.Batch()
+		self.labelbatch = pyglet.graphics.Batch()
 		self.frame = pyglet.gui.Frame(window, order=4)
+
+		# Button to create a new project
 		self.newbutton = OneTimeButton(self.assetpos[0][0]*self.window.width,
 										self.assetpos[0][1]*self.window.height,
 										self.pressed,
@@ -41,6 +44,17 @@ class Menu(Scene):
 		self.newbutton.set_handler('on_release', output)
 		self.frame.add_widget(self.newbutton)
 
+		self.newlabel = pyglet.text.Label("New Project",
+                                       font_size=self.newbutton.height//5,
+                                       x=self.newbutton.x+self.newbutton.width//2,
+                                       y=self.newbutton.y+self.newbutton.height//2,
+                                       batch=self.labelbatch,
+                                       color=(0,0,0,255),
+									   anchor_x='center',
+									   anchor_y='center')
+
+
+		# Button to open an existing project
 		self.loadbutton = OneTimeButton(self.assetpos[1][0]*self.window.width,
 										self.assetpos[1][1]*self.window.height,
 										self.pressed,
@@ -50,6 +64,16 @@ class Menu(Scene):
 		self.loadbutton.set_handler('on_release', output)
 		self.frame.add_widget(self.loadbutton)
 
+		self.loadlabel = pyglet.text.Label("Load Project",
+                                       font_size=self.loadbutton.height//5,
+                                       x=self.loadbutton.x+self.loadbutton.width//2,
+                                       y=self.loadbutton.y+self.loadbutton.height//2,
+                                       batch=self.labelbatch,
+                                       color=(0,0,0,255),
+									   anchor_x='center',
+									   anchor_y='center')
+
+		#Button to open settings
 		self.settingsbutton = OneTimeButton(self.assetpos[2][0]*self.window.width,
 											self.assetpos[2][1]*self.window.height,
 											self.pressed,
@@ -59,6 +83,15 @@ class Menu(Scene):
 		self.settingsbutton.set_handler('on_release', output)
 		self.frame.add_widget(self.settingsbutton)
 
+		self.settingslabel = pyglet.text.Label("Settings",
+                                       font_size=self.settingsbutton.height//5,
+                                       x=self.settingsbutton.x+self.settingsbutton.width//2,
+                                       y=self.settingsbutton.y+self.settingsbutton.height//2,
+                                       batch=self.labelbatch,
+                                       color=(0,0,0,255),
+									   anchor_x='center',
+									   anchor_y='center')
+
 		self.logo = pyglet.sprite.Sprite(self.logopng,
 										self.assetpos[3][0]*self.window.width,
 										self.assetpos[3][1]*self.window.height,
@@ -67,14 +100,12 @@ class Menu(Scene):
 		self.logo._group.set_state = types.MethodType(set_state, group)
 
 
-		self.push_label = pyglet.text.Label("Push Button: False", x=300, y=300, batch=self.batch, color=(0, 0, 0, 255))
-
-
 	def on_draw(self, manager):
 		super().on_draw(manager)
 		manager.window.clear()
 		pyglet.gl.glClearColor(75/255, 0/255, 0/255, 1)
 		self.batch.draw()
+		self.labelbatch.draw()
 
 	def on_activate(self,manager):
 		pass
@@ -104,6 +135,21 @@ class Menu(Scene):
 								scale_x=self.assetsize[1][0]*self.window.width/200,
 								scale_y=self.assetsize[1][1]*self.window.height/200)
 
+		updateLabel(self.newlabel,
+					font_size=self.newbutton.height//5,
+					x=self.newbutton.x+self.newbutton.width//2,
+					y=self.newbutton.y+self.newbutton.height//2)
+
+		updateLabel(self.loadlabel,
+					font_size=self.loadbutton.height//5,
+					x=self.loadbutton.x+self.loadbutton.width//2,
+					y=self.loadbutton.y+self.loadbutton.height//2)
+
+		updateLabel(self.settingslabel,
+					font_size=self.settingsbutton.height//5,
+					x=self.settingsbutton.x+self.settingsbutton.width//2,
+					y=self.settingsbutton.y+self.settingsbutton.height//2)
+
 
 	def on_mouse_press(self, manager, x, y, buttons, modifiers):
 
@@ -115,10 +161,12 @@ class Menu(Scene):
 			if not self.newbutton.nearest:
 				self.newbutton.update(nearest=True)
 				self.newbutton.nearest = True
+
 		elif self.loadbutton.value:
 			if not self.loadbutton.nearest:
 				self.loadbutton.update(nearest=True)
 				self.loadbutton.nearest = True
+
 		elif self.settingsbutton.value:
 			if not self.settingsbutton.nearest:
 				self.settingsbutton.update(nearest=True)
