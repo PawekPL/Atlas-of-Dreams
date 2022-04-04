@@ -1,21 +1,15 @@
 from libs.screen_manager import Scene
 import pyglet
 from pyglet.gl import *
-from libs.widgets import OneTimeButton,updateLabel
-
+from libs.widgets import OneTimeButton,updateLabel,set_state
+import types
 import time
+
 
 def output():
 	print(time.time())
 
-import types #Source: https://groups.google.com/g/pyglet-users/c/s8Icda9oPnY
-def set_state(self):
-	glEnable(self.texture.target)
-	glBindTexture(self.texture.target, self.texture.id)
-	glPushAttrib(GL_COLOR_BUFFER_BIT)
-	glEnable(GL_BLEND)
-	glTexParameteri(self.texture.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-	glBlendFunc(self.blend_src, self.blend_dest)
+
 
 class Menu(Scene):
 	def __init__(self,window):
@@ -101,9 +95,9 @@ class Menu(Scene):
 
 
 	def on_draw(self, manager):
-		super().on_draw(manager)
 		manager.window.clear()
 		pyglet.gl.glClearColor(75/255, 0/255, 0/255, 1)
+  		super().on_draw(manager)
 		self.batch.draw()
 		self.labelbatch.draw()
 
