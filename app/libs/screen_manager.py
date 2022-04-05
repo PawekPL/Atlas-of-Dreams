@@ -54,6 +54,7 @@ class SceneManager(object):
 
         @self.window.event
         def on_draw():
+            print(12345)
             self.scenes[self.current].on_draw(self)
             if self.show_fps:
                 self.fps_display.draw()

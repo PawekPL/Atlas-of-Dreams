@@ -9,7 +9,8 @@ import time
 def output():
 	print(time.time())
 
-
+def new():
+	print(time.time())
 
 class Menu(Scene):
 	def __init__(self,window):
@@ -35,15 +36,15 @@ class Menu(Scene):
 										self.depressed,
 										batch=self.batch)
 
-		self.newbutton.set_handler('on_release', output)
+		self.newbutton.set_handler('on_release', self.new)
 		self.frame.add_widget(self.newbutton)
 
 		self.newlabel = pyglet.text.Label("New Project",
-                                       font_size=self.newbutton.height//5,
-                                       x=self.newbutton.x+self.newbutton.width//2,
-                                       y=self.newbutton.y+self.newbutton.height//2,
-                                       batch=self.labelbatch,
-                                       color=(0,0,0,255),
+									   font_size=self.newbutton.height//5,
+									   x=self.newbutton.x+self.newbutton.width//2,
+									   y=self.newbutton.y+self.newbutton.height//2,
+									   batch=self.labelbatch,
+									   color=(0,0,0,255),
 									   anchor_x='center',
 									   anchor_y='center')
 
@@ -59,11 +60,11 @@ class Menu(Scene):
 		self.frame.add_widget(self.loadbutton)
 
 		self.loadlabel = pyglet.text.Label("Load Project",
-                                       font_size=self.loadbutton.height//5,
-                                       x=self.loadbutton.x+self.loadbutton.width//2,
-                                       y=self.loadbutton.y+self.loadbutton.height//2,
-                                       batch=self.labelbatch,
-                                       color=(0,0,0,255),
+									   font_size=self.loadbutton.height//5,
+									   x=self.loadbutton.x+self.loadbutton.width//2,
+									   y=self.loadbutton.y+self.loadbutton.height//2,
+									   batch=self.labelbatch,
+									   color=(0,0,0,255),
 									   anchor_x='center',
 									   anchor_y='center')
 
@@ -78,11 +79,11 @@ class Menu(Scene):
 		self.frame.add_widget(self.settingsbutton)
 
 		self.settingslabel = pyglet.text.Label("Settings",
-                                       font_size=self.settingsbutton.height//5,
-                                       x=self.settingsbutton.x+self.settingsbutton.width//2,
-                                       y=self.settingsbutton.y+self.settingsbutton.height//2,
-                                       batch=self.labelbatch,
-                                       color=(0,0,0,255),
+									   font_size=self.settingsbutton.height//5,
+									   x=self.settingsbutton.x+self.settingsbutton.width//2,
+									   y=self.settingsbutton.y+self.settingsbutton.height//2,
+									   batch=self.labelbatch,
+									   color=(0,0,0,255),
 									   anchor_x='center',
 									   anchor_y='center')
 
@@ -93,13 +94,18 @@ class Menu(Scene):
 		group = self.logo._group
 		self.logo._group.set_state = types.MethodType(set_state, group)
 
+		self.buttons = [self.newbutton,self.loadbutton,self.settingsbutton]
+
+	def new(self):
+		self.window.current = "new"
 
 	def on_draw(self, manager):
 		manager.window.clear()
 		pyglet.gl.glClearColor(75/255, 0/255, 0/255, 1)
-  		super().on_draw(manager)
+		super().on_draw(manager)
 		self.batch.draw()
 		self.labelbatch.draw()
+		print(0x987)
 
 	def on_activate(self,manager):
 		pass

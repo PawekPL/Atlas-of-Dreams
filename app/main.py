@@ -21,9 +21,17 @@ class Manager(SceneManager):
                        "menu":Menu(self.window),
                        "new":NewProject(self.window)
         }
+
         self.current = "menu"
-    def on_mouse_press(self):
-        pass
+        self.window.current = "menu"
+        print(1243)
+        @self.window.event
+        def on_mouse_press(_,__,___,____):
+            print(1243)
+            if self.window.current != self.current:
+                self.current = self.window.current
+                self.scenes[self.current].on_resize(self,None,None)
+
 
 class Empty(Scene):
     """Empty scene for initialisation"""
@@ -33,6 +41,7 @@ class Empty(Scene):
     def on_draw(self, manager):
         super().on_draw(manager)
         manager.window.clear()
+        print(374297835)
 
 
 
@@ -40,5 +49,6 @@ if __name__ == '__main__':
     if os.getcwd()[-4:] != "\\app": # To run straight in Atom without file not found errors
         print(os.getcwd())
         os.chdir(f"{os.getcwd()}\\app")
-    scenemgr = Manager(resolution=(1280,720),title="Atlas Of Dreams", show_fps=False,vsync=False,fps=-1)
+    scenemgr = Manager(resolution=(1280,720),title="Atlas Of Dreams", show_fps=False,vsync=False,fps=10000)
+    print(345)
     pyglet.app.run()

@@ -14,18 +14,18 @@ def on_draw():
 ####################################
 # load resources to use for Widgets:
 ####################################
-
+'''
 depressed = pyglet.resource.image('button_up.png')
 pressed = pyglet.resource.image('button_down.png')
 hover = pyglet.resource.image('button_hover.png')
 bar = pyglet.resource.image('bar.png')
 knob = pyglet.resource.image('knob.png')
-
+'''
 
 ######################################
 # Create some event handler functions:
 ######################################
-
+'''
 def slider_handler(value):
     slider_label.text = f"Slider Value: {round(value, 1)}"
 
@@ -41,7 +41,7 @@ def push_button_handler():
 def release_button_handler():
     push_label.text = f"Push Button: False"
 
-
+'''
 def text_entry_handler(text):
     text_entry_label.text = f"Text: {text}"
 
@@ -53,7 +53,7 @@ def text_entry_handler(text):
 # A Frame instance to hold all Widgets:
 frame = pyglet.gui.Frame(window, order=4)
 
-
+'''
 togglebutton = pyglet.gui.ToggleButton(100, 400, pressed=pressed, depressed=depressed, hover=hover, batch=batch)
 togglebutton.set_handler('on_toggle', toggle_button_handler)
 frame.add_widget(togglebutton)
@@ -71,7 +71,7 @@ slider = pyglet.gui.Slider(100, 200, bar, knob, edge=5, batch=batch)
 slider.set_handler('on_change', slider_handler)
 frame.add_widget(slider)
 slider_label = pyglet.text.Label("Slider Value: 0.0", x=300, y=200, batch=batch, color=(0, 0, 0, 255))
-
+'''
 
 text_entry = pyglet.gui.TextEntry("Enter Your Name", 100, 100, 150, batch=batch)
 frame.add_widget(text_entry)

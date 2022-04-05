@@ -1,6 +1,7 @@
 from libs.screen_manager import Scene
 import pyglet
 from pyglet.gl import *
+from pyglet.gui import *
 from libs.widgets import OneTimeButton,updateLabel,ToggleButton
 
 import time
@@ -72,7 +73,27 @@ class NewProject(Scene):
 									   anchor_x='center',
 									   anchor_y='center')
 
+		self.startlabel = pyglet.text.Label("wiuer",
+                                       font_size=24,
+                                       x=100,
+                                       y=100,
+                                       batch=self.labelbatch,
+                                       color=(0,0,0,255),
+									   anchor_x='center',
+									   anchor_y='center')
 
+		self.text_entry = pyglet.gui.TextEntry("Enter Your Name", 100, 100, 150, batch=self.batch)
+		self.frame.add_widget(self.text_entry)
+		'''
+		self.nameinput = TextEntry("Project Name",
+									100,
+									100,
+									150,
+									batch=self.batch)
+		self.frame.add_widget(self.nameinput)
+		self.nameinput.set_handler('on_commit', output)
+		'''
+		print(1234)
 
 
 	def on_draw(self, manager):
@@ -81,6 +102,7 @@ class NewProject(Scene):
 		pyglet.gl.glClearColor(75/255, 0/255, 0/255, 1)
 		self.batch.draw()
 		self.labelbatch.draw()
+
 
 	def on_activate(self,manager):
 		pass
