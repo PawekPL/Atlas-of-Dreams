@@ -36,7 +36,6 @@ class Menu(Scene):
 										self.depressed,
 										batch=self.batch)
 
-		self.newbutton.set_handler('on_release', self.new)
 		self.frame.add_widget(self.newbutton)
 
 		self.newlabel = pyglet.text.Label("New Project",
@@ -96,8 +95,6 @@ class Menu(Scene):
 
 		self.buttons = [self.newbutton,self.loadbutton,self.settingsbutton]
 
-	def new(self):
-		self.window.current = "new"
 
 	def on_draw(self, manager):
 		manager.window.clear()
@@ -105,7 +102,6 @@ class Menu(Scene):
 		super().on_draw(manager)
 		self.batch.draw()
 		self.labelbatch.draw()
-		print(0x987)
 
 	def on_activate(self,manager):
 		pass
@@ -153,11 +149,10 @@ class Menu(Scene):
 
 	def on_mouse_press(self, manager, x, y, buttons, modifiers):
 
-		self.newbutton.on_mouse_press(x, y, buttons, modifiers)
-		self.loadbutton.on_mouse_press(x, y, buttons, modifiers)
-		self.settingsbutton.on_mouse_press(x, y, buttons, modifiers)
+		self.frame.on_mouse_press(x,y,buttons,modifiers)
 
 		if self.newbutton.value:
+			self.window.current = "new"
 			if not self.newbutton.nearest:
 				self.newbutton.update(nearest=True)
 				self.newbutton.nearest = True
@@ -173,6 +168,4 @@ class Menu(Scene):
 				self.settingsbutton.nearest = True
 
 	def on_mouse_release(self, manager, x, y, buttons, modifiers):
-		self.newbutton.on_mouse_release(x, y, buttons, modifiers)
-		self.loadbutton.on_mouse_release(x, y, buttons, modifiers)
-		self.settingsbutton.on_mouse_release(x, y, buttons, modifiers)
+		self.frame.on_mouse_release(x,y,buttons,modifiers)

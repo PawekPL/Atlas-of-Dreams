@@ -190,7 +190,7 @@ public function loadAsset(path,offsetX,offsetY,offsetZ,offsetV,offsetVN)
 	private string output
 	private file file = open(path,"r")
 	private string asset = file.read()
-	private vertices = regex(asset,"v -?[0-9]\.[0-9]+ -?[0-9]\.[0-9]+ -?[0-9]\.[0-9]+","multiline") // get list of all vertices using regex
+	private vertices = regex(asset,"v -?[0-9]+\.[0-9]+ -?[0-9]+\.[0-9]+ -?[0-9]+\.[0-9]+","multiline") // get list of all vertices using regex
 	private replacement = "\n".join(vertices)
 	for vertex in vertices
 		value = vertex.split(" ")

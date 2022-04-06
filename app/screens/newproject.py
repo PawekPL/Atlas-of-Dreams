@@ -26,6 +26,11 @@ class NewProject(Scene):
 		self.assetpos = [(40/1280,640/720),(990/1280,640/720),(515/1280,80/720),(540/1280,510/720)]
 		self.assetsize = [(250/1280,60/720),(200/1280,200/720)]
 		self.window = window
+		self.window.params = {"name":"New Project",
+								"seed":0,
+								"size":100,
+								"gen_structures":True
+								}
 
 		self.pressed = pyglet.image.load("./assets/button-down.png")
 		self.depressed = pyglet.image.load("./assets/button.png")
@@ -64,7 +69,7 @@ class NewProject(Scene):
 		self.startbutton.set_handler('on_release', output)
 		self.frame.add_widget(self.startbutton)
 
-		self.startlabel = pyglet.text.Label("Load Project",
+		self.startlabel = pyglet.text.Label("Start",
                                        font_size=self.startbutton.height//5,
                                        x=self.startbutton.x+self.startbutton.width//2,
                                        y=self.startbutton.y+self.startbutton.height//2,
@@ -73,27 +78,23 @@ class NewProject(Scene):
 									   anchor_x='center',
 									   anchor_y='center')
 
-		self.startlabel = pyglet.text.Label("wiuer",
-                                       font_size=24,
-                                       x=100,
-                                       y=100,
-                                       batch=self.labelbatch,
-                                       color=(0,0,0,255),
-									   anchor_x='center',
-									   anchor_y='center')
 
-		self.text_entry = pyglet.gui.TextEntry("Enter Your Name", 100, 100, 150, batch=self.batch)
-		self.frame.add_widget(self.text_entry)
-		'''
 		self.nameinput = TextEntry("Project Name",
-									100,
-									100,
-									150,
+									self.window.width//2,
+									4*self.window.height//5,
+									self.window.width//4,
 									batch=self.batch)
 		self.frame.add_widget(self.nameinput)
-		self.nameinput.set_handler('on_commit', output)
-		'''
-		print(1234)
+		self.nameinput.set_handler('on_commit', self.name_update)
+
+		self.seedinput = TextEntry("",
+									self.window.width//2,
+									3*self.window.height//5,
+									self.window.width//4,
+									batch=self.batch)
+		self.frame.add_widget(self.seedinput)
+		self.seedinput.set_handler('on_commit', self.seed_update)
+
 
 
 	def on_draw(self, manager):
@@ -135,8 +136,7 @@ class NewProject(Scene):
 
 	def on_mouse_press(self, manager, x, y, buttons, modifiers):
 
-		self.backbutton.on_mouse_press(x, y, buttons, modifiers)
-		self.startbutton.on_mouse_press(x, y, buttons, modifiers)
+		self.frame.on_mouse_press(x,y,buttons,modifiers)
 
 		if self.backbutton.value:
 			if not self.backbutton.nearest:
@@ -150,5 +150,18 @@ class NewProject(Scene):
 
 
 	def on_mouse_release(self, manager, x, y, buttons, modifiers):
-		self.backbutton.on_mouse_release(x, y, buttons, modifiers)
-		self.startbutton.on_mouse_release(x, y, buttons, modifiers)
+		self.frame.on_mouse_release(x,y,buttons,modifiers)
+
+	def name_update(self,val):
+		self.window.params["name"] = val
+		print(self.window.params["name"])
+	def seed_update(self,val):
+		try:
+			seed = int(val)
+		except:
+			seed = 0
+			for m,i in enumerate(val):
+				seed += ord(i)*(m+1)
+
+		self.window.params["seed"] = seed
+		print(self.window.params["seed"])

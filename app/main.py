@@ -3,6 +3,7 @@ from libs.screen_manager import SceneManager,Scene
 from pyglet.gl import *
 from screens.menu import Menu
 from screens.newproject import NewProject
+from screens.worldgeneration import WorldGen
 import os
 
 class Manager(SceneManager):
@@ -19,18 +20,19 @@ class Manager(SceneManager):
         self.window.set_minimum_size(120,50)
         self.scenes = {
                        "menu":Menu(self.window),
-                       "new":NewProject(self.window)
+                       "new":NewProject(self.window),
+                       "gen":WorldGen(self.window)
         }
 
-        self.current = "menu"
-        self.window.current = "menu"
-        print(1243)
+        self.current = "gen"
+        self.window.current = "gen"
         @self.window.event
-        def on_mouse_press(_,__,___,____):
-            print(1243)
+        def on_mouse_release(_,__,___,____):
             if self.window.current != self.current:
                 self.current = self.window.current
                 self.scenes[self.current].on_resize(self,None,None)
+
+
 
 
 class Empty(Scene):
@@ -41,7 +43,6 @@ class Empty(Scene):
     def on_draw(self, manager):
         super().on_draw(manager)
         manager.window.clear()
-        print(374297835)
 
 
 
@@ -50,5 +51,4 @@ if __name__ == '__main__':
         print(os.getcwd())
         os.chdir(f"{os.getcwd()}\\app")
     scenemgr = Manager(resolution=(1280,720),title="Atlas Of Dreams", show_fps=False,vsync=False,fps=10000)
-    print(345)
     pyglet.app.run()
