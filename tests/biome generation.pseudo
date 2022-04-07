@@ -134,7 +134,7 @@ class Chunk
 		private str name = str((chunkX,chunkZ)) // for chunk 0,0 the name will be "(0,0)"
 
 		private str wavefront = "mtllib biome-colour-map.mtl\no " + name +"\n"
-		private strchunk wavefrontWater = "mtllib water-colour-map.mtl\no " + name +"\n"
+		private str wavefrontWater = "mtllib water-colour-map.mtl\no " + name +"\n"
 
 		private int offsetV
 		private int offsetVN

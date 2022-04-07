@@ -1,0 +1,15 @@
+{
+	"python.testing.unittestArgs": [
+		"-v",
+		"-s",
+		"./app",
+		"-p",
+		"*test*.py"
+	],
+	"python.testing.pytestEnabled": false,
+	"python.testing.unittestEnabled": true,
+	"editor.minimap.renderCharacters": true,
+	"files.autoSave": "onFocusChange",
+	"workbench.colorTheme": "dark-plus-syntax",
+	"workbench.preferredDarkColorTheme": "Visual Studio Dark"
+}
