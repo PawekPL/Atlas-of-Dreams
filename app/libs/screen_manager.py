@@ -17,7 +17,7 @@ class SceneManager(object):
             self.scenes[self.current].on_step(self, dt)
 
     def __init__(self, start, scenes, resolution, title="Untitled", #changed x and y into resolution variable //Pawel
-                 fps=-1, show_fps=False,vsync=False,resizable=True):
+                 fps=10000, show_fps=False,vsync=False,resizable=True):
         """Initialize and run."""
         self.running = True
         self.current = start
@@ -207,19 +207,27 @@ class Scene(object):
     def on_text_motion_select(self, app, motion):
         pass
 
-
-class MenuScene(Scene):
-    """Menu scene in progress."""
-
-    def __init__(self):
-        super().__init__()
-
-
-    def on_draw(self, manager):
-        super().on_draw(manager)
-        manager.window.clear()
-
-
-
 if __name__ == '__main__':
-    SceneManager("menu", {"menu": MenuScene()}, show_fps=True)
+    from widgets import LoadingBar
+    class MenuScene(Scene):
+        """Menu scene in progress."""
+
+        def __init__(self):
+            super().__init__()
+            self.batch = pyglet.graphics.Batch()
+            self.loading = LoadingBar(300//4,
+                                                3*300//8,
+                                                300//2,
+                                                300//16,
+                                                batch=self.batch)
+        def on_draw(self, manager):
+            super().on_draw(manager)
+            manager.window.clear()
+            self.batch.draw()
+
+        def on_step(self,_,dt):
+            self.loading.value += 0.0001
+            print(dt)
+
+    SceneManager("menu", {"menu": MenuScene()},(300,300), show_fps=True)
+    pyglet.app.run()    

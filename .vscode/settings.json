@@ -10,6 +10,6 @@
 	"python.testing.unittestEnabled": true,
 	"editor.minimap.renderCharacters": true,
 	"files.autoSave": "onFocusChange",
-	"workbench.colorTheme": "dark-plus-syntax",
-	"workbench.preferredDarkColorTheme": "Visual Studio Dark"
+	"workbench.colorTheme": "GitOne",
+	"workbench.preferredDarkColorTheme": "GitOne"
 }
