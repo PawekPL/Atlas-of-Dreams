@@ -28,15 +28,12 @@ class Manager(SceneManager):
             "new": NewProject(self.window),
             "gen": WorldGen(self.window)
         }
-
         self.current = "gen"
-        self.window.current = "gen"
 
-        @self.window.event
-        def on_mouse_release(_, __, ___, ____):
-            if self.window.current != self.current:
-                self.current = self.window.current
-                self.scenes[self.current].on_resize(self, None, None)
+
+    def set_scene(self, scene):
+        self.current = scene
+        self.scenes[self.current].on_resize(self, None, None)
 
 
 class Empty(Scene):

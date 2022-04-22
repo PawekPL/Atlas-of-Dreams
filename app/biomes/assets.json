@@ -1,0 +1,11 @@
+{
+    "house":{
+        "objpath":"biomes/plains/house.obj"
+    },
+    "bush":{
+        "objpath": "biomes/plains/bush.obj"
+    },
+    "well":{
+        "objpath": "biomes/desert/well.obj"
+    }
+}
