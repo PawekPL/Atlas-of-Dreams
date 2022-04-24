@@ -1,6 +1,7 @@
-[
-    {
+{
+    "plains":{
         "name": "plains",
+        "type": "plains",
         "height": 0.125,
         "temperature": 0.0,
         "humidity": 0.4,
@@ -21,15 +22,16 @@
                 }
             ]
         },
-    {
+    "desert":{
         "name": "desert",
+        "type": "desert",
         "height": 0.125,
         "temperature": 1.0,
         "humidity": -1.0,
         "erosion": -1.0,
         "fantasyness": -1.0,
         "evilness": 0.0,
-        "color": [0.988, 0.980, 0.553],
+        "color": [0.553, 0.980, 0.988],
         "assets":[
             {
                 "name": "well",
@@ -38,4 +40,4 @@
                 }
             ]
         }
-    ]
+    }

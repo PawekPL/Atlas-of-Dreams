@@ -10,6 +10,7 @@ import noise  # pip install https://github.com/caseman/noise/archive/refs/heads/
 import numpy as np
 import pyglet
 import scipy.spatial as sp
+import cv2
 from libs.screen_manager import Scene
 from libs.widgets import LoadingBar, updateLabel
 from pyglet.gl import *
@@ -21,13 +22,18 @@ BIOME_LIST = json.load(open("biomes/biomes.json", "r"))  # List of biomes
 BIOME_ARRAY = np.zeros((len(BIOME_LIST), 6))  # Array of biome attributes
 ASSET_LIST = json.load(open("biomes/assets.json", "r"))  # List of assets
 
-for i in range(len(BIOME_LIST)):
-    BIOME_ARRAY[i][0] = BIOME_LIST[i]["height"]
-    BIOME_ARRAY[i][1] = BIOME_LIST[i]["temperature"]
-    BIOME_ARRAY[i][2] = BIOME_LIST[i]["humidity"]
-    BIOME_ARRAY[i][3] = BIOME_LIST[i]["erosion"]
-    BIOME_ARRAY[i][4] = BIOME_LIST[i]["fantasyness"]
-    BIOME_ARRAY[i][5] = BIOME_LIST[i]["evilness"]
+ASSET_PNGS = {}
+for asset in ASSET_LIST:
+    ASSET_PNGS[asset] = cv2.imread(
+        ASSET_LIST[asset]["pngpath"], cv2.IMREAD_UNCHANGED)
+
+for i, b in enumerate(BIOME_LIST):
+    BIOME_ARRAY[i][0] = BIOME_LIST[b]["height"]
+    BIOME_ARRAY[i][1] = BIOME_LIST[b]["temperature"]
+    BIOME_ARRAY[i][2] = BIOME_LIST[b]["humidity"]
+    BIOME_ARRAY[i][3] = BIOME_LIST[b]["erosion"]
+    BIOME_ARRAY[i][4] = BIOME_LIST[b]["fantasyness"]
+    BIOME_ARRAY[i][5] = BIOME_LIST[b]["evilness"]
 
 BIOME_TREE = sp.cKDTree(BIOME_ARRAY)  # Tree of biome attributes
 
@@ -60,7 +66,12 @@ class Vertex(object):
         elif self._type == "a":  # Asset vertex
             self.assetID = assetID
         elif self._type == "e":  # Edge vertex
+            self.humidity = humidity
+            self.temperature = temperature
             self.erosion = erosion
+            self.fantasyness = fantasyness
+            self.evilness = evilness
+            self.biome = self._getBiome()
             self.y = self._calculateHeight()
 
     def _getBiome(self):
@@ -69,12 +80,12 @@ class Vertex(object):
                 Returns:
                         string: biomeID
                 """
-        return BIOME_TREE.query([self.y,
+        return list(BIOME_LIST)[BIOME_TREE.query([self.y,
                                 self.humidity,
                                 self.temperature,
                                 self.erosion,
                                 self.fantasyness,
-                                self.evilness])[1]
+                                self.evilness])[1]]
 
     def _calculateHeight(self):
         """ Calculate the actual height the vertex is placed at.
@@ -83,12 +94,20 @@ class Vertex(object):
 
 
 class Chunk(object):
-    def __init__(self, chunkX, chunkZ, noise, noise_hu, noise_te, noise_er, noise_fa, noise_ev, world_name):
+    def __init__(self, chunkX, chunkZ, noise, noise_hu, noise_te, noise_er, noise_fa, noise_ev, world_name, seed):
         self.world_name = world_name
         self.size = 50
         self.scale = 1
         self.chunkX = chunkX
         self.chunkZ = chunkZ
+        self.seed = seed * 150
+        # Set noises as class attributes
+        self.noise = noise
+        self.noise_hu = noise_hu
+        self.noise_te = noise_te
+        self.noise_er = noise_er
+        self.noise_fa = noise_fa
+        self.noise_ev = noise_ev
         # create a numpy array with size of self.size
         self.vertices = np.empty((self.size, self.size), dtype=np.object)
         self.edgeVertices = {}
@@ -100,67 +119,40 @@ class Chunk(object):
             for z in range(self.size):
                 _x = (x+self.chunkXc)/self.size
                 _z = (z+self.chunkZc)/self.size
-                self.vertices[x][z] = Vertex(
-                    _x*self.size,
-                    noise(_x/2, _z/2) + 
-                    0.25*noise(_x/8, _z/8) +
-                    0.125*noise(_x/16, _z/16),
-                    _z*self.size,
-                    "t",
-                    humidity=noise_hu(_x, _z),
-                    temperature=noise_te(_x*2, _z*2),
-                    erosion=noise_er((_x+100/self.size),
-                                     (_z+100/self.size)),
-                    fantasyness=noise_fa((_x+100)*4, (_z+100)*4),
-                    evilness=noise_ev(_x, _x+_z, _z))
+                self.vertices[x][z] = self.genVertex(_x, _z, "t")
 
                 if x == 0:
-                    self.edgeVertices[(x-1, z)] = Vertex(
-                        (x-1)+self.chunkXc,
-                        noise((x-1+self.chunkXc)/self.size/2, _z/2) + 
-                        0.25*noise((x-1+self.chunkXc)/self.size/8, _z/8) +
-                        0.125*noise((x-1+self.chunkXc)/self.size/16, _z/16),
-                        z+self.chunkZc,
-                        "e",
-                        erosion=noise_er(
-                            ((x-1+self.chunkXc)+100)/self.size,
-                            (_z+100/self.size))
-                    )
+                    self.edgeVertices[(x-1, z)] = self.genVertex(
+                        (x+self.chunkXc-1)/self.size, _z, "e")
+
                 elif x == self.size-1:
-                    self.edgeVertices[(x+1, z)] = Vertex(
-                        (x+1)+self.chunkXc,
-                        noise((x+1+self.chunkXc)/self.size/2, _z/2) + 
-                        0.25*noise((x+1+self.chunkXc)/self.size/8, _z/8) +
-                        0.125*noise((x+1+self.chunkXc)/self.size/16, _z/16),
-                        z+self.chunkZc,
-                        "e",
-                        erosion=noise_er(
-                            ((x+1+self.chunkXc)+100)/self.size,
-                            (_z+100/self.size))
-                    )
+                    self.edgeVertices[(x+1, z)] = self.genVertex(
+                        (x+self.chunkXc+1)/self.size, _z, "e")
+
                 if z == 0:
-                    self.edgeVertices[(x, z-1)] = Vertex(
-                        x+self.chunkXc,
-                        noise(_x/2, ((z-1+self.chunkZc)/self.size)/2) + 
-                        0.25*noise(_x/8, ((z-1+self.chunkZc)/self.size)/8) +
-                        0.125*noise(_x/16, (z-1+self.chunkZc)/self.size/16),
-                        (z-1)+self.chunkZc,
-                        "e",
-                        erosion=noise_er(
-                            (_x+100/self.size),
-                            (((z-1)+self.chunkZc)+100)/self.size)
-                    )
+                    self.edgeVertices[(x, z-1)] = self.genVertex(
+                        _x, (z+self.chunkZc-1)/self.size, "e")
+
                 elif z == self.size-1:
-                    self.edgeVertices[(x, z+1)] = Vertex(
-                        x+self.chunkXc,
-                        noise(_x/2, ((z+1+self.chunkZc)/self.size)/2) + 
-                        0.25*noise(_x/8, ((z+1+self.chunkZc)/self.size)/8) +
-                        0.125*noise(_x/16, (z+1+self.chunkZc)/self.size/16),
-                        (z+1)+self.chunkZc,
-                        "e",
-                        erosion=noise_er(
-                            (_x+100/self.size), (((z+1)+self.chunkZc)+100)/self.size)
-                    )
+                    self.edgeVertices[(x, z+1)] = self.genVertex(
+                        _x, (z+self.chunkZc+1)/self.size, "e")
+
+                if x == 0 and z == 0:
+                    self.edgeVertices[(x-1, z-1)] = self.genVertex(
+                        (x+self.chunkXc-1)/self.size, (z+self.chunkZc-1)/self.size, "e")
+
+                elif x == 0 and z == self.size-1:
+                    self.edgeVertices[(x-1, z+1)] = self.genVertex(
+                        (x+self.chunkXc-1)/self.size, (z+self.chunkZc+1)/self.size, "e")
+
+                elif x == self.size-1 and z == 0:
+                    self.edgeVertices[(x+1, z-1)] = self.genVertex(
+                        (x+self.chunkXc+1)/self.size, (z+self.chunkZc-1)/self.size, "e")
+
+                elif x == self.size-1 and z == self.size-1:
+                    self.edgeVertices[(x+1, z+1)] = self.genVertex(
+                        (x+self.chunkXc+1)/self.size, (z+self.chunkZc+1)/self.size, "e")
+
                 # TODO: Add water vertices
 
                 # check if water vertex exists above the terrain vertex
@@ -184,7 +176,23 @@ class Chunk(object):
                                                                 "a",
                                                                 assetID=chosen_asset["name"])
 
-        self.genOBJ()
+        # self.genOBJ()
+        self.genPNG()
+
+    def genVertex(self, x, z, vtype):
+        return Vertex(
+            x*self.size,
+            self.noise(x/2, z/2, self.seed) +
+            0.25*self.noise(x/8, z/8, self.seed) +
+            0.125*self.noise(x/16, z/16, self.seed),
+            z*self.size,
+            vtype,
+            humidity=self.noise_hu(x, z, self.seed),
+            temperature=self.noise_te(x*2, z*2, self.seed),
+            erosion=self.noise_er((x+100/self.size),
+                                  (z+100/self.size), self.seed),
+            fantasyness=self.noise_fa((x+100)*4, (z+100)*4, self.seed),
+            evilness=self.noise_ev(x, x+z, self.seed))
 
     def genOBJ(self):
         tris = []
@@ -197,14 +205,13 @@ class Chunk(object):
         wavefront_tris = ''
         wavefront_normals = ''
 
-        # chunk name taht will be used as a filename
+        # chunk name that will be used as a filename
         name = f"{self.chunkX}_{self.chunkZ}"
         wavefront = f"mtllib biome-colour-map.mtl\ng {name}\no {name}\n"
         wavefrontWater = f"mtllib water-colour-map.mtl\no {name}\n"
 
         for x in range(self.size):
             for z in range(self.size):
-                _asdasdasd = f"v {self.vertices[x,z].x} {self.vertices[x,z].z} {self.vertices[x,z].y}\n"
                 wavefront += f"v {self.vertices[x,z].x} {self.vertices[x,z].z} {self.vertices[x,z].y}\n"
                 if x > 0 and z > 0:
                     tris.append(((x-1, z-1), (x-1, z), (x, z)))
@@ -287,6 +294,51 @@ class Chunk(object):
         with open(f"saves/{self.world_name}/{name}.obj", "w") as f:
             f.write(wavefront)
 
+    def genPNG(self):
+        # chunk name that will be used as a filename
+        name = f"{self.chunkX}_{self.chunkZ}"
+
+        chunk_img = np.full(
+            ((self.size+2), (self.size+2), 3), 1, dtype=np.uint8)
+        asset_img = np.zeros(
+            ((self.size+2)*10, (self.size+2)*10, 4), dtype=np.uint8)
+        height_img = np.zeros(
+            ((self.size+2), (self.size+2), 4), dtype=np.uint8)
+
+        for x in range(self.size+2):
+            for z in range(self.size+2):
+                if (x != self.size+1 and z != self.size+1) and (x != 0 and z != 0):
+                    color = np.array(
+                        BIOME_LIST[self.vertices[x-1, z-1].biome]["color"])*255
+                    b = int(self.vertices[x-1, z-1].y/60*1.45*200)
+
+                else:
+                    color = np.array(
+                        BIOME_LIST[self.edgeVertices[(x-1, z-1)].biome]["color"])*255
+                    b = int(self.edgeVertices[x-1, z-1].y/60*1.45*200)
+
+                hcolor = np.array([b, b, b, 150])
+                height_img[x, z] = hcolor
+                chunk_img[x, z] = color
+
+        height_img = cv2.resize(
+            height_img, ((self.size+2)*10, (self.size+2)*10))
+        chunk_img = cv2.resize(
+            chunk_img, ((self.size+2)*10, (self.size+2)*10), interpolation=cv2.INTER_NEAREST)
+
+        for asset in self.assetVertices:
+            p1 = (self.assetVertices[asset].x-self.chunkXc+1)*10-5
+            p2 = (self.assetVertices[asset].x-self.chunkXc+1)*10+5
+            p3 = (self.assetVertices[asset].z-self.chunkZc+1)*10-5
+            p4 = (self.assetVertices[asset].z-self.chunkZc+1)*10+5
+            a = ASSET_PNGS[self.assetVertices[asset].assetID]
+            asset_img[p1:p2, p3:p4] = np.where(
+                asset_img[p1:p2, p3:p4] < a, a, a)
+
+        cv2.imwrite(f"saves/{self.world_name}/{name}.png", chunk_img)
+        cv2.imwrite(f"saves/{self.world_name}/{name}-assets.png", asset_img)
+        cv2.imwrite(f"saves/{self.world_name}/{name}-height.png", height_img)
+
 
 class World(object):
     def __init__(self, name, size, seed):
@@ -316,13 +368,14 @@ and will be used to generate the world.
         self.chunks = {}  # Using dict to store chunks instead of an array to allow for easy chunk editing and deletion
         np.random.seed(seed)
         random.seed(seed)
+        self.seed = seed
         self.size = size
         # Splitting noises into different variables so that it's clear where each noise is used.
-        self.noise = noise.snoise2
-        self.noise_hu = noise.pnoise2
-        self.noise_te = noise.pnoise2
-        self.noise_er = noise.snoise2
-        self.noise_fa = noise.pnoise2
+        self.noise = noise.snoise3
+        self.noise_hu = noise.pnoise3
+        self.noise_te = noise.pnoise3
+        self.noise_er = noise.snoise3
+        self.noise_fa = noise.pnoise3
         self.noise_ev = noise.pnoise3
 
         self.queue = []
@@ -364,7 +417,8 @@ and will be used to generate the world.
                                     self.noise_er,
                                     self.noise_fa,
                                     self.noise_ev,
-                                    self.name)
+                                    self.name,
+                                    self.seed)
 
 
 def loadObjAsset(path, x, y, z, offsetV, offsetVN, offsetVT=0):
@@ -434,7 +488,7 @@ class WorldGen(Scene):
             anchor_x='center',
             anchor_y='center')
 
-        self.world = World("asd", 10, 1)
+        self.world = World("asdf", 10, 1)
 
     def on_draw(self, manager):
         # super().on_draw(manager)

@@ -1,24 +1,4 @@
-import types  # Source: https://groups.google.com/g/pyglet-users/c/s8Icda9oPnY
-from libs.screen_manager import Scene
 import pyglet
-from pyglet.gl import *
-from pyglet.gui import *
-from libs.widgets import OneTimeButton, updateLabel, ToggleButton
-
-import time
-
-
-def output():
-    print(time.time())
-
-
-def set_state(self):
-    glEnable(self.texture.target)
-    glBindTexture(self.texture.target, self.texture.id)
-    glPushAttrib(GL_COLOR_BUFFER_BIT)
-    glEnable(GL_BLEND)
-    glTexParameteri(self.texture.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-    glBlendFunc(self.blend_src, self.blend_dest)
 
 
 class NewProject(Scene):

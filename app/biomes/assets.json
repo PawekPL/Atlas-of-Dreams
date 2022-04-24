@@ -1,11 +1,14 @@
 {
     "house":{
-        "objpath":"biomes/plains/house.obj"
+        "objpath":"biomes/plains/house.obj",
+        "pngpath":"biomes/plains/house.png"
     },
     "bush":{
-        "objpath": "biomes/plains/bush.obj"
+        "objpath": "biomes/plains/bush.obj",
+        "pngpath": "biomes/plains/bush.png"
     },
     "well":{
-        "objpath": "biomes/desert/well.obj"
+        "objpath": "biomes/desert/well.obj",
+        "pngpath": "biomes/desert/well.png"        
     }
 }

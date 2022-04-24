@@ -155,7 +155,6 @@ class Menu(Scene):
         self.settingsbutton.on_mouse_press(x, y, buttons, modifiers)
         
         if self.newbutton.value:
-            self.window.current = "new"
             if not self.newbutton.nearest:
                 self.newbutton.update(nearest=True)
                 self.newbutton.nearest = True
