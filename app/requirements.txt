@@ -1,0 +1,5 @@
+noise==1.2.3
+numpy==1.22.3
+opencv_python==4.5.5.64
+pyglet==1.5.23
+scipy==1.8.0

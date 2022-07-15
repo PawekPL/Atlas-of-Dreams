@@ -1,15 +1,24 @@
 import os
-if os.getcwd()[-4:] != "\\app":  # To run straight in Atom without file not found errors
+
+if os.getcwd()[-4:] != "\\app":  # To run straight in IDE without file not found errors
     print(os.getcwd())
     os.chdir(f"{os.getcwd()}\\app")
-    
 
-from screens.worldgeneration import WorldGen
+
+import json
+
 import pyglet
-from libs.screen_manager import SceneManager, Scene
 from pyglet.gl import *
+
+from libs.screen_manager import Scene, SceneManager
 from screens.menu import Menu
 from screens.newproject import NewProject
+from screens.view2d import View2D
+from screens.view3d import View3D
+from screens.worldgeneration import WorldGen
+from screens.loadproject import LoadProject
+from screens.settings import Settings
+
 
 class Manager(SceneManager):
 
@@ -23,17 +32,32 @@ class Manager(SceneManager):
                          vsync=vsync,
                          resizable=resizable)
         self.window.set_minimum_size(120, 50)
+        self.window.WORLD_PROPERTIES = {}
         self.scenes = {
-            "menu": Menu(self.window),
-            "new": NewProject(self.window),
-            "gen": WorldGen(self.window)
+            "menu": Menu(self,self.window),
+            "new": NewProject(self,self.window),
+            "gen": WorldGen(self.window),
+            "3Dview": View3D(self,self.window),
+            "2Dview": View2D(self,self.window),
+            "load": LoadProject(self,self.window),
+            "settings": Settings(self,self.window)
         }
-        self.current = "gen"
-
+        self.current = "menu"
+        self.previous = ""
 
     def set_scene(self, scene):
+        self.scenes[scene].on_resize(self, 
+                                     self.window.width, 
+                                     self.window.height)
+        try:
+            self.scenes[scene].on_load()
+        except Exception as e:
+            print(e)
         self.current = scene
-        self.scenes[self.current].on_resize(self, None, None)
+
+
+    def on_step(self, dt):        
+        super().on_step(dt)
 
 
 class Empty(Scene):
@@ -48,8 +72,11 @@ class Empty(Scene):
 
 
 if __name__ == '__main__':
-
-    scenemgr = Manager(resolution=(
-        1280, 720), title="Atlas Of Dreams", show_fps=False, vsync=False, fps=10000)
+    settings = json.load(open("config/settings.json"))
+    scenemgr = Manager(
+        resolution=settings["resolution"], 
+        title="Atlas Of Dreams", 
+        show_fps=settings["show_fps"], 
+        vsync=settings["vsync"], 
+        fps=settings["fps_limit"])
     pyglet.app.run()
-

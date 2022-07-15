@@ -11,7 +11,7 @@ time = 0
 
 @window.event
 def on_resize(width, height):
-    window.projection = pyglet.window.Mat4.perspective_projection(0, width, 0, height, z_near=0.1, z_far=255)
+    window.projection = pyglet.math.Mat4.perspective_projection(0, width, 0, height, z_near=0.1, z_far=255)
     return pyglet.event.EVENT_HANDLED
 
 

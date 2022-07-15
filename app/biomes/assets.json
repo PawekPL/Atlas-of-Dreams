@@ -10,5 +10,9 @@
     "well":{
         "objpath": "biomes/desert/well.obj",
         "pngpath": "biomes/desert/well.png"        
+    },
+    "tree":{
+        "objpath": "biomes/forrest/tree.obj",
+        "pngpath": "biomes/forrest/tree.png"
     }
 }

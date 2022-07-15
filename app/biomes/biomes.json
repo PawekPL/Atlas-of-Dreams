@@ -6,18 +6,16 @@
         "temperature": 0.0,
         "humidity": 0.4,
         "erosion": -1.0,
-        "fantasyness": -1.0,
+        "fantasyness": 0.0,
         "evilness": -0.5,
         "color": [0.012, 0.659, 0.129],
         "assets":[
             {
                 "name": "house",
-                "path": "biomes/plains/house.obj",
                 "chance": 0.005
                 },
             {
                 "name": "bush",
-                "path": "biomes/plains/bush.obj",
                 "chance": 0.015
                 }
             ]
@@ -29,15 +27,36 @@
         "temperature": 1.0,
         "humidity": -1.0,
         "erosion": -1.0,
-        "fantasyness": -1.0,
+        "fantasyness": 0.0,
         "evilness": 0.0,
         "color": [0.553, 0.980, 0.988],
         "assets":[
             {
                 "name": "well",
-                "path": "biomes/desert/well.obj",
                 "chance": 0.005
+                }
+            ]
+        },
+    "forrest":{
+        "name": "forrest",
+        "type": "forrest",
+        "height": 0.125,
+        "temperature": -0.05,
+        "humidity": 0.4,
+        "erosion": -1.0,
+        "fantasyness": 0.05,
+        "evilness": -0.5,
+        "color": [0.012, 0.459, 0.129],
+        "assets":[
+            {
+                "name": "tree",
+                "chance": 0.1
+                },
+            {
+                "name": "bush",
+                "chance": 0.015
                 }
             ]
         }
     }
+    
